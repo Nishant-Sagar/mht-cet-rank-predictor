@@ -63,6 +63,17 @@ class ConvertResponse(BaseModel):
     estimated_rank: int
 
 
+# ── helpers ───────────────────────────────────────────────────────────────────
+
+_NULL_STRINGS = {"null", "none", "undefined", ""}
+
+def normalize_branch(branch: Optional[str]) -> Optional[str]:
+    if branch is None:
+        return None
+    cleaned = branch.strip().lower()
+    return None if cleaned in _NULL_STRINGS else branch.strip()
+
+
 # ── endpoints ─────────────────────────────────────────────────────────────────
 
 @app.get("/predict", response_model=PredictResponse, summary="Predict colleges by rank")
@@ -72,6 +83,7 @@ def predict_by_rank(
     branch: Optional[str] = Query(None, description="Branch keyword filter (e.g. 'Computer', 'Mechanical')"),
     top_n: int = Query(15, ge=1, le=50, description="Number of results to return"),
 ):
+    branch = normalize_branch(branch)
     try:
         results = predictor.predict(
             user_rank=rank,
@@ -97,6 +109,7 @@ def predict_by_percentile(
     branch: Optional[str] = Query(None, description="Branch keyword filter"),
     top_n: int = Query(15, ge=1, le=50),
 ):
+    branch = normalize_branch(branch)
     rank = predictor.percentile_to_rank(percentile)
     try:
         results = predictor.predict(
@@ -123,6 +136,7 @@ def predict_by_marks(
     branch: Optional[str] = Query(None, description="Branch keyword filter"),
     top_n: int = Query(15, ge=1, le=50),
 ):
+    branch = normalize_branch(branch)
     percentile = predictor.marks_to_percentile(marks)
     rank = predictor.percentile_to_rank(percentile)
     try:
