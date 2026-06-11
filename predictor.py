@@ -161,6 +161,20 @@ class MAHCETCollegePredictor:
             eligible = sorted(set(x[eligible_mask]))
             return eligible if eligible else sorted(set(x))
 
+        def best_branch_for_group(group: pd.DataFrame) -> str:
+            eligible = group[group["eligible"]]
+            if not eligible.empty:
+                # most competitive branch the student still qualifies for
+                return eligible.loc[eligible["closing_rank"].idxmin(), "branch"]
+            # fallback: most accessible branch in the college
+            return group.loc[group["closing_rank"].idxmax(), "branch"]
+
+        best_branch_map = (
+            df.groupby("college", group_keys=False)
+            .apply(best_branch_for_group)
+            .rename("best_branch")
+        )
+
         grouped = (
             df.groupby("college", as_index=False)
             .agg(
@@ -171,6 +185,8 @@ class MAHCETCollegePredictor:
                 chance=("chance", lambda x: sorted(set(x), key=lambda c: chance_priority.get(c, 9))[0]),
             )
         )
+
+        grouped = grouped.merge(best_branch_map, on="college")
 
         grouped = grouped.sort_values(
             by=["priority", "best_closing_rank"],
