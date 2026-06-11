@@ -10,7 +10,10 @@ from pydantic import BaseModel, Field, field_validator
 
 from predictor import MAHCETCollegePredictor, PredictorConfig
 
-CSV_PATH = os.getenv("CSV_PATH", "mahcet_cutoff.csv")
+CSV_PATH = os.getenv(
+    "CSV_PATH",
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "mahcet_cutoff.csv"),
+)
 
 predictor: MAHCETCollegePredictor
 
