@@ -53,6 +53,7 @@ class CollegePrediction(BaseModel):
 class PredictResponse(BaseModel):
     user_rank: int
     category: str
+    branch_filter: Optional[str]
     results: List[CollegePrediction]
 
 
@@ -84,6 +85,7 @@ def predict_by_rank(
     return PredictResponse(
         user_rank=rank,
         category=category.upper(),
+        branch_filter=branch,
         results=results,
     )
 
@@ -109,6 +111,7 @@ def predict_by_percentile(
     return PredictResponse(
         user_rank=rank,
         category=category.upper(),
+        branch_filter=branch,
         results=results,
     )
 
@@ -135,6 +138,7 @@ def predict_by_marks(
     return PredictResponse(
         user_rank=rank,
         category=category.upper(),
+        branch_filter=branch,
         results=results,
     )
 
