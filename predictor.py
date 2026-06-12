@@ -25,6 +25,7 @@ class MAHCETCollegePredictor:
         "NT3": {"NT3", "NTC", "GNTC", "LNTC"},
         "VJ": {"VJ", "NTD", "GNTD", "LNTD"},
         "EWS": {"EWS"},
+        "TFWS": {"TFWS"},
     }
 
     def __init__(self, csv_path: str, config: PredictorConfig | None = None):
