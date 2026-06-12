@@ -121,7 +121,11 @@ class MAHCETCollegePredictor:
         if branch:
             b = branch.strip()
             if b:
-                df_branch = df[df["branch"].str.contains(b, case=False, na=False)]
+                words = b.lower().split()
+                mask = df["branch"].apply(
+                    lambda x: all(w in x.lower() for w in words)
+                )
+                df_branch = df[mask]
                 if df_branch.empty:
                     available = sorted(df["branch"].unique())
                     raise ValueError(
