@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import re
 from contextlib import asynccontextmanager
 from typing import List, Optional
 
@@ -66,12 +67,21 @@ class ConvertResponse(BaseModel):
 # ── helpers ───────────────────────────────────────────────────────────────────
 
 _NULL_STRINGS = {"null", "none", "undefined", ""}
+_DTE_CODE_RE = re.compile(r'^\d+\s+')
 
 def normalize_branch(branch: Optional[str]) -> Optional[str]:
     if branch is None:
         return None
     cleaned = branch.strip().lower()
     return None if cleaned in _NULL_STRINGS else branch.strip()
+
+def clean_name(name: str) -> str:
+    return _DTE_CODE_RE.sub('', name).strip()
+
+def clean_results(results: list) -> list:
+    for r in results:
+        r["college"] = clean_name(r["college"])
+    return results
 
 
 # ── endpoints ─────────────────────────────────────────────────────────────────
@@ -98,7 +108,7 @@ def predict_by_rank(
         user_rank=rank,
         category=category.upper(),
         branch_filter=branch,
-        results=results,
+        results=clean_results(results),
     )
 
 
@@ -125,7 +135,7 @@ def predict_by_percentile(
         user_rank=rank,
         category=category.upper(),
         branch_filter=branch,
-        results=results,
+        results=clean_results(results),
     )
 
 
@@ -153,7 +163,7 @@ def predict_by_marks(
         user_rank=rank,
         category=category.upper(),
         branch_filter=branch,
-        results=results,
+        results=clean_results(results),
     )
 
 
