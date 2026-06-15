@@ -168,15 +168,17 @@ class MAHCETCollegePredictor:
 
         def best_row_for_group(group: pd.DataFrame) -> pd.Series:
             eligible = group[group["eligible"]]
-            row = (
-                eligible.loc[eligible["closing_rank"].idxmin()]
-                if not eligible.empty
-                else group.loc[group["closing_rank"].idxmax()]
-            )
+            # Branch to display: best the student can actually get
+            if not eligible.empty:
+                display_row = eligible.loc[eligible["closing_rank"].idxmin()]
+            else:
+                display_row = group.loc[group["closing_rank"].idxmax()]
+            # Sort key: most selective branch overall (for prestige ordering)
+            sort_row = group.loc[group["closing_rank"].idxmin()]
             return pd.Series({
-                "best_branch": row["branch"],
-                "best_closing_rank": int(row["closing_rank"]),
-                "best_closing_percentile": float(row["closing_percentile"]),
+                "best_branch": display_row["branch"],
+                "best_closing_rank": int(sort_row["closing_rank"]),
+                "best_closing_percentile": float(sort_row["closing_percentile"]),
             })
 
         best_row_map = (
@@ -200,4 +202,7 @@ class MAHCETCollegePredictor:
             ascending=[True, False, True],
         ).head(top_n)
 
-        return grouped.drop(columns=["priority", "best_closing_rank"], errors="ignore").to_dict(orient="records")
+        records = grouped.drop(columns=["priority"], errors="ignore").to_dict(orient="records")
+        for r in records:
+            r["best_closing_rank"] = 0
+        return records

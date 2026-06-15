@@ -46,6 +46,7 @@ class CollegePrediction(BaseModel):
     college: str
     best_branch: str
     branches: List[str]
+    best_closing_rank: int
     best_closing_percentile: float
     chance: str  # "High" | "Medium" | "Low"
 
