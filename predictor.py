@@ -200,4 +200,4 @@ class MAHCETCollegePredictor:
             ascending=[True, False, True],
         ).head(top_n)
 
-        return grouped.to_dict(orient="records")
+        return grouped.drop(columns=["priority", "best_closing_rank"], errors="ignore").to_dict(orient="records")
