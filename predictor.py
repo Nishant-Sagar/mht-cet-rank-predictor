@@ -194,8 +194,8 @@ class MAHCETCollegePredictor:
         grouped = grouped.merge(best_branch_map, on="college")
 
         grouped = grouped.sort_values(
-            by=["priority", "best_closing_rank"],
-            ascending=[True, True],
+            by=["priority", "best_closing_percentile", "best_closing_rank"],
+            ascending=[True, False, True],
         ).head(top_n)
 
         return grouped.to_dict(orient="records")
